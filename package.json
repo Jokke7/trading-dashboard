@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "bun run node_modules/.bin/next dev --hostname 0.0.0.0",
     "dev:local": "bun run node_modules/.bin/next dev",
-    "build": "npx next build",
+    "build": "npm run build:next",
+    "build:next": "next build",
     "start": "bun run node_modules/.bin/next start",
     "lint": "eslint"
   },
