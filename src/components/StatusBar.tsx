@@ -1,7 +1,5 @@
 'use client';
 
-// Force rebuild
-
 import { useHealth, useStatus, useEmergencyStop } from '@/hooks/useBotData';
 import { Activity, Square, Play, AlertCircle, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
