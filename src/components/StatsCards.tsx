@@ -39,6 +39,7 @@ export function StatsCards({ isRunning = true }: StatsCardsProps) {
   }
 
   // Calculate portfolio value with current prices
+  // For paper mode, only count USDT (since testnet has fake balances for all tokens)
   let totalValue = 0;
   let btcValue = 0;
   let ethValue = 0;
@@ -60,6 +61,7 @@ export function StatsCards({ isRunning = true }: StatsCardsProps) {
       ethValue = amount * price;
       totalValue += ethValue;
     }
+    // Skip all other testnet tokens - they have fake balances that distort the total
   });
 
   // Calculate P&L from trades
