@@ -1,10 +1,25 @@
 'use client';
 
 import { useTrades } from '@/hooks/useBotData';
-import { Check, X, ArrowUpCircle, ArrowDownCircle, MinusCircle } from 'lucide-react';
+import { Check, X, ArrowUpCircle, ArrowDownCircle, MinusCircle, Pause } from 'lucide-react';
 
-export function TradesTable() {
-  const { data, isLoading } = useTrades();
+interface TradesTableProps {
+  isRunning?: boolean;
+}
+
+export function TradesTable({ isRunning = true }: TradesTableProps) {
+  const { data, isLoading } = useTrades(isRunning);
+
+  if (!isRunning) {
+    return (
+      <div className="bg-slate-900/50 rounded-xl border border-slate-800/50 p-6">
+        <div className="flex items-center justify-center gap-3 text-slate-500">
+          <Pause className="w-5 h-5" />
+          <span>Trades list paused while bot is stopped</span>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

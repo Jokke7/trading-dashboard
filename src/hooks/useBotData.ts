@@ -11,50 +11,55 @@ import {
 } from '@/lib/api';
 
 const REFRESH_INTERVAL = 30000; // 30 seconds
+const PAUSED_INTERVAL = false; // Don't auto-refresh when paused
 
-export function useHealth() {
+export function useHealth(enabled = true) {
   return useQuery({
     queryKey: ['health'],
     queryFn: getHealth,
-    refetchInterval: REFRESH_INTERVAL,
+    refetchInterval: enabled ? REFRESH_INTERVAL : PAUSED_INTERVAL,
     retry: 3,
+    enabled,
   });
 }
 
-export function useStatus() {
+export function useStatus(enabled = true) {
   return useQuery({
     queryKey: ['status'],
     queryFn: getStatus,
-    refetchInterval: REFRESH_INTERVAL,
+    refetchInterval: enabled ? REFRESH_INTERVAL : PAUSED_INTERVAL,
     retry: 3,
+    enabled,
   });
 }
 
-export function usePortfolio() {
+export function usePortfolio(enabled = true) {
   return useQuery({
     queryKey: ['portfolio'],
     queryFn: getPortfolio,
-    refetchInterval: REFRESH_INTERVAL,
+    refetchInterval: enabled ? REFRESH_INTERVAL : PAUSED_INTERVAL,
     retry: 3,
+    enabled,
   });
 }
 
-export function useTrades() {
+export function useTrades(enabled = true) {
   return useQuery({
     queryKey: ['trades'],
     queryFn: getTrades,
-    refetchInterval: REFRESH_INTERVAL,
+    refetchInterval: enabled ? REFRESH_INTERVAL : PAUSED_INTERVAL,
     retry: 3,
+    enabled,
   });
 }
 
-export function useSignals(pair: string) {
+export function useSignals(pair: string, enabled = true) {
   return useQuery({
     queryKey: ['signals', pair],
     queryFn: () => getSignals(pair),
-    refetchInterval: REFRESH_INTERVAL,
+    refetchInterval: enabled ? REFRESH_INTERVAL : PAUSED_INTERVAL,
     retry: 3,
-    enabled: !!pair,
+    enabled: !!pair && enabled,
   });
 }
 

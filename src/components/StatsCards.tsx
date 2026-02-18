@@ -1,12 +1,29 @@
 'use client';
 
 import { usePortfolio, useSignals } from '@/hooks/useBotData';
-import { Wallet, TrendingUp, TrendingDown, DollarSign, Coins } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, DollarSign, Coins, Pause } from 'lucide-react';
 
-export function StatsCards() {
-  const { data: portfolio, isLoading: portfolioLoading } = usePortfolio();
-  const { data: btcSignals } = useSignals('BTCUSDT');
-  const { data: ethSignals } = useSignals('ETHUSDT');
+interface StatsCardsProps {
+  isRunning?: boolean;
+}
+
+export function StatsCards({ isRunning = true }: StatsCardsProps) {
+  const { data: portfolio, isLoading: portfolioLoading } = usePortfolio(isRunning);
+  const { data: btcSignals } = useSignals('BTCUSDT', isRunning);
+  const { data: ethSignals } = useSignals('ETHUSDT', isRunning);
+
+  if (!isRunning) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-slate-900/50 rounded-xl p-6 border border-slate-800/50 col-span-3">
+          <div className="flex items-center justify-center gap-3 text-slate-500">
+            <Pause className="w-5 h-5" />
+            <span>Auto-refresh paused while bot is stopped</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (portfolioLoading) {
     return (
