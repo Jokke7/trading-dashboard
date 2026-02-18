@@ -1,6 +1,10 @@
 # Trading Bot Dashboard
 
-A simple, single-page dashboard for monitoring the trading bot at `trading.godot.no`.
+A monitoring dashboard for the autonomous crypto trading bot.
+
+## Live
+
+Currently running at [trading.godot.no](https://trading.godot.no)
 
 ## Features
 
