@@ -7,8 +7,8 @@ import {
   EmergencyStopResponse,
 } from '@/types';
 
-const API_URL = process.env.BOT_API_URL || 'http://localhost:3847';
-const API_KEY = process.env.BOT_API_KEY || '';
+const API_URL = process.env.NEXT_PUBLIC_BOT_API_URL || 'http://localhost:3847';
+const API_KEY = process.env.NEXT_PUBLIC_BOT_API_KEY || '';
 
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${API_URL}${endpoint}`;

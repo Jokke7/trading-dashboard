@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --hostname 0.0.0.0",
-    "dev:local": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "bun run node_modules/.bin/next dev --hostname 0.0.0.0",
+    "dev:local": "bun run node_modules/.bin/next dev",
+    "build": "bun run node_modules/.bin/next build",
+    "start": "bun run node_modules/.bin/next start",
     "lint": "eslint"
   },
   "dependencies": {
