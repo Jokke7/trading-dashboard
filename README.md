@@ -88,8 +88,9 @@ Create `.env.local` (not committed to git):
 
 ```bash
 # Bot API Configuration
-BOT_API_URL=http://localhost:3847
-BOT_API_KEY=your_api_key_here
+# NOTE: Must use NEXT_PUBLIC_ prefix for Next.js to expose to browser
+NEXT_PUBLIC_BOT_API_URL=http://localhost:3847
+NEXT_PUBLIC_BOT_API_KEY=your_api_key_here
 ```
 
 **Never commit `.env.local` to git!** It contains your API key.
@@ -128,3 +129,43 @@ All endpoints require `X-API-Key` header.
 ## License
 
 MIT
+
+---
+
+## Optional Improvements
+
+### 🔧 Add React Compiler
+
+To potentially improve performance, you can enable React Compiler:
+
+1. **Install the compiler and ESLint plugin:**
+   ```bash
+   bun add babel-plugin-react-compiler eslint-plugin-react-compiler
+   ```
+
+2. **Configure ESLint** (`.eslintrc.json`):
+   ```json
+   {
+     "plugins": ["react-compiler"],
+     "rules": {
+       "react-compiler/react-compiler": "error"
+     }
+   }
+   ```
+
+3. **Update `next.config.ts`:**
+   ```ts
+   const nextConfig: NextConfig = {
+     experimental: {
+       reactCompiler: true,
+     },
+     // ...other config
+   };
+   ```
+
+4. **Run ESLint** to catch any violations:
+   ```bash
+   bun run lint
+   ```
+
+**Note:** React Compiler is still experimental. It requires all code to follow the Rules of React and can introduce bugs if not properly configured. For a dashboard that polls every 30 seconds, the current setup is likely fine.
