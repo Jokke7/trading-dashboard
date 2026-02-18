@@ -13,6 +13,20 @@ export interface BotState {
   lastUpdated: string;
 }
 
+export interface Position {
+  symbol: string;
+  quantity: number;
+  avgPrice: number;
+  currentPrice: number;
+  value: number;
+  pnl: number;
+  pnlPercent: number;
+}
+
+export interface PositionsResponse {
+  positions: Position[];
+}
+
 export interface Balance {
   asset: string;
   free: string;

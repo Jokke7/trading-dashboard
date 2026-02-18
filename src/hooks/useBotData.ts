@@ -7,6 +7,7 @@ import {
   getPortfolio,
   getTrades,
   getSignals,
+  getPositions,
   setEmergencyStop,
 } from '@/lib/api';
 
@@ -47,6 +48,16 @@ export function useTrades(enabled = true) {
   return useQuery({
     queryKey: ['trades'],
     queryFn: getTrades,
+    refetchInterval: enabled ? REFRESH_INTERVAL : PAUSED_INTERVAL,
+    retry: 3,
+    enabled,
+  });
+}
+
+export function usePositions(enabled = true) {
+  return useQuery({
+    queryKey: ['positions'],
+    queryFn: getPositions,
     refetchInterval: enabled ? REFRESH_INTERVAL : PAUSED_INTERVAL,
     retry: 3,
     enabled,

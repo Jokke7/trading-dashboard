@@ -5,12 +5,15 @@ import { StatusBar } from '@/components/StatusBar';
 import { StatsCards } from '@/components/StatsCards';
 import { MarketCard } from '@/components/MarketCard';
 import { TradesTable } from '@/components/TradesTable';
-import { Activity } from 'lucide-react';
-import { useStatus } from '@/hooks/useBotData';
+import { Activity, Wallet } from 'lucide-react';
+import { useStatus, usePositions } from '@/hooks/useBotData';
 
 export default function Dashboard() {
   const { data: status } = useStatus();
+  const { data: positionsData } = usePositions(status?.running ?? false);
   const isRunning = status?.running && !status?.emergencyStop;
+
+  const positions = positionsData?.positions ?? [];
 
   return (
     <div className="min-h-screen bg-slate-950">
@@ -39,11 +42,20 @@ export default function Dashboard() {
         {/* Stats Cards - Pass isRunning to control auto-refresh */}
         <StatsCards isRunning={isRunning} />
 
-        {/* Market Cards - Pass isRunning to control auto-refresh */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <MarketCard pair="BTCUSDT" isRunning={isRunning} />
-          <MarketCard pair="ETHUSDT" isRunning={isRunning} />
-        </div>
+        {/* Positions / Market Cards */}
+        {positions.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {positions.map((position) => (
+              <MarketCard key={position.symbol} pair={position.symbol} isRunning={isRunning} />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-slate-900 rounded-xl p-8 border border-slate-800 text-center">
+            <Wallet className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-slate-300 mb-2">No Active Positions</h3>
+            <p className="text-slate-500">The bot hasn&apos;t opened any positions yet.</p>
+          </div>
+        )}
 
         {/* Trades Table - Pass isRunning to control auto-refresh */}
         <TradesTable isRunning={isRunning} />
