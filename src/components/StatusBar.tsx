@@ -46,7 +46,7 @@ export function StatusBar() {
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-red-500" />
             <span className="font-medium text-red-400">Connection Error</span>
-            <span className="text-sm text-slate-500">Check if bot is running on 192.168.1.120:3847</span>
+              <span className="text-sm text-slate-500">Check if bot is running at api.trading.godot.no</span>
           </div>
           <button
             onClick={handleRefresh}
