@@ -1,16 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, XCircle, Settings, Zap, TrendingUp, Bot } from 'lucide-react';
+import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, XCircle, Settings, TrendingUp, Bot } from 'lucide-react';
 
 interface LogEntry {
   timestamp: string;
-  symbol: string;
+  pair: string;
   action: 'BUY' | 'SELL' | 'HOLD';
-  amountUsd: number;
+  confidence: number;
   reasoning: string;
   executed: boolean;
-  reason?: string;
+  price?: number;
 }
 
 interface SidebarProps {
@@ -77,19 +77,17 @@ export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
                       <div className="flex items-center gap-1.5">
                         {getActionIcon(log.action, log.executed)}
                         <span className="text-sm font-medium text-slate-200">
-                          {log.action} {log.symbol.replace('USDT', '')}
+                          {log.action} {log.pair.replace('USDT', '')}
                         </span>
+                        {log.confidence && (
+                          <span className="text-xs text-slate-500">({log.confidence}%)</span>
+                        )}
                       </div>
                       <span className="text-xs text-slate-500">
                         {formatTime(log.timestamp)}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 line-clamp-2 mb-1">{log.reasoning}</p>
-                    {log.executed ? (
-                      <span className="text-xs text-emerald-400">${log.amountUsd.toFixed(2)}</span>
-                    ) : (
-                      <span className="text-xs text-yellow-400">{log.reason || 'Skipped'}</span>
-                    )}
+                    <p className="text-xs text-slate-400 line-clamp-2">{log.reasoning}</p>
                   </div>
                 ))}
               </div>

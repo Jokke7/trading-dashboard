@@ -7,16 +7,16 @@ import { MarketCard } from '@/components/MarketCard';
 import { TradesTable } from '@/components/TradesTable';
 import { Sidebar } from '@/components/Sidebar';
 import { Activity, Wallet } from 'lucide-react';
-import { useStatus, usePositions, useRecommendations } from '@/hooks/useBotData';
+import { useStatus, usePositions, useTrades } from '@/hooks/useBotData';
 
 export default function Dashboard() {
   const { data: status } = useStatus();
   const { data: positionsData } = usePositions(status?.running ?? false);
-  const { data: recommendationsData } = useRecommendations(status?.running ?? false);
+  const { data: tradesData } = useTrades(status?.running ?? false);
   const isRunning = status?.running && !status?.emergencyStop;
 
   const positions = positionsData?.positions ?? [];
-  const recommendations = recommendationsData?.recommendations ?? [];
+  const trades = tradesData?.trades ?? [];
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
@@ -65,7 +65,7 @@ export default function Dashboard() {
 
         {/* Sidebar - Desktop only, continuous bar */}
         <aside className="hidden lg:block w-72 border-l border-slate-800 bg-slate-900 flex-shrink-0 overflow-hidden">
-          <Sidebar logs={recommendations} isRunning={isRunning} />
+          <Sidebar logs={trades} isRunning={isRunning} />
         </aside>
       </div>
     </div>
