@@ -1,6 +1,6 @@
 'use client';
 
-import { usePortfolio, useSignals } from '@/hooks/useBotData';
+import { usePositions } from '@/hooks/useBotData';
 import { Wallet, TrendingUp, TrendingDown, DollarSign, Coins, Pause } from 'lucide-react';
 
 interface StatsCardsProps {
@@ -8,9 +8,7 @@ interface StatsCardsProps {
 }
 
 export function StatsCards({ isRunning = true }: StatsCardsProps) {
-  const { data: portfolio, isLoading: portfolioLoading } = usePortfolio(isRunning);
-  const { data: btcSignals } = useSignals('BTCUSDT', isRunning);
-  const { data: ethSignals } = useSignals('ETHUSDT', isRunning);
+  const { data: positionsData, isLoading: positionsLoading } = usePositions(isRunning);
 
   if (!isRunning) {
     return (
@@ -25,7 +23,7 @@ export function StatsCards({ isRunning = true }: StatsCardsProps) {
     );
   }
 
-  if (portfolioLoading) {
+  if (positionsLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[...Array(3)].map((_, i) => (
@@ -38,38 +36,18 @@ export function StatsCards({ isRunning = true }: StatsCardsProps) {
     );
   }
 
-  // Calculate portfolio value with current prices
-  // For paper mode, only count USDT (since testnet has fake balances for all tokens)
-  let totalValue = 0;
-  let btcValue = 0;
-  let ethValue = 0;
-  let usdtValue = 0;
-
-  portfolio?.balances?.forEach((balance) => {
-    const amount = parseFloat(balance.free) + parseFloat(balance.locked);
-    if (amount <= 0) return;
-
-    if (balance.asset === 'USDT') {
-      usdtValue = amount;
-      totalValue += amount;
-    } else if (balance.asset === 'BTC' && btcSignals) {
-      const price = parseFloat(btcSignals.price);
-      btcValue = amount * price;
-      totalValue += btcValue;
-    } else if (balance.asset === 'ETH' && ethSignals) {
-      const price = parseFloat(ethSignals.price);
-      ethValue = amount * price;
-      totalValue += ethValue;
-    }
-    // Skip all other testnet tokens - they have fake balances that distort the total
-  });
-
-  // Calculate P&L from trades
-  // In paper mode, we start with $10,000 and track trades
+  const positions = positionsData?.positions ?? [];
+  
+  const totalValue = positions.reduce((sum, pos) => sum + pos.value, 0);
+  const totalPnl = positions.reduce((sum, pos) => sum + pos.pnl, 0);
+  
   const initialBalance = 10000;
-  const currentBalance = totalValue || usdtValue;
-  const totalPnl = currentBalance - initialBalance;
-  const todayPnl = 0; // Would need daily tracking
+  const currentBalance = initialBalance + totalPnl;
+  const pnlPercent = ((currentBalance - initialBalance) / initialBalance) * 100;
+
+  const btcPosition = positions.find(p => p.symbol === 'BTCUSDT');
+  const ethPosition = positions.find(p => p.symbol === 'ETHUSDT');
+  const usdtPosition = positions.find(p => p.symbol === 'USDTUSDT');
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -79,13 +57,13 @@ export function StatsCards({ isRunning = true }: StatsCardsProps) {
           <div>
             <p className="text-sm text-slate-500 mb-1">Paper Portfolio Value</p>
             <p className="text-2xl font-bold text-slate-100">
-              ${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
-            {(btcValue > 0 || ethValue > 0) && (
+            {positions.length > 0 && (
               <p className="text-xs text-slate-500 mt-1">
-                {btcValue > 0 && `${(btcValue / totalValue * 100).toFixed(1)}% BTC `}
-                {ethValue > 0 && `${(ethValue / totalValue * 100).toFixed(1)}% ETH `}
-                {usdtValue > 0 && `${(usdtValue / totalValue * 100).toFixed(1)}% USDT`}
+                {btcPosition && `${(btcPosition.value / totalValue * 100).toFixed(1)}% BTC `}
+                {ethPosition && `${(ethPosition.value / totalValue * 100).toFixed(1)}% ETH `}
+                {usdtPosition && `${(usdtPosition.value / totalValue * 100).toFixed(1)}% USDT`}
               </p>
             )}
           </div>
@@ -101,10 +79,10 @@ export function StatsCards({ isRunning = true }: StatsCardsProps) {
           <div>
             <p className="text-sm text-slate-500 mb-1">Paper Money Available</p>
             <p className="text-2xl font-bold text-emerald-400">
-              ${usdtValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${initialBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
             <p className="text-xs text-slate-500 mt-1">
-              Starting: ${initialBalance.toLocaleString()}
+              Starting balance
             </p>
           </div>
           <div className="p-3 bg-emerald-500/20 rounded-lg">
@@ -127,7 +105,7 @@ export function StatsCards({ isRunning = true }: StatsCardsProps) {
               )}
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {((totalPnl / initialBalance) * 100).toFixed(2)}% return
+              {pnlPercent >= 0 ? '+' : ''}{pnlPercent.toFixed(2)}% return
             </p>
           </div>
           <div className={`p-3 rounded-lg ${totalPnl >= 0 ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}>
