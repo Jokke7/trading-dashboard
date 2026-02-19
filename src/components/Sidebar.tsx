@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, Settings, TrendingUp, Bot } from 'lucide-react';
+import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, Settings, Clock, Zap, BarChart3, Bot } from 'lucide-react';
 import type { BotState } from '@/types';
 
 interface LogEntry {
@@ -36,6 +36,14 @@ export function Sidebar({ logs = [], isRunning = true, status }: SidebarProps) {
     return new Date(timestamp).toLocaleTimeString('en-US', { 
       hour: '2-digit', 
       minute: '2-digit' 
+    });
+  };
+
+  const formatLastUpdate = (timestamp: string) => {
+    return new Date(timestamp).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
     });
   };
 
@@ -149,38 +157,41 @@ export function Sidebar({ logs = [], isRunning = true, status }: SidebarProps) {
         </button>
 
         {expanded === 'status' && (
-          <div className="px-4 pb-4 space-y-2">
+          <div className="px-4 pb-4 space-y-2.5">
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500 flex items-center gap-1.5">
-                <TrendingUp className="w-3 h-3" /> Mode
+                <Settings className="w-3 h-3" /> Mode
               </span>
-              <span className="text-slate-300 font-medium capitalize">
+              <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium uppercase ${
+                status?.mode === 'live' ? 'bg-red-500/20 text-red-400' :
+                status?.mode === 'testnet' ? 'bg-purple-500/20 text-purple-400' :
+                'bg-blue-500/20 text-blue-400'
+              }`}>
                 {status?.mode ?? '—'}
               </span>
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500 flex items-center gap-1.5">
-                <Activity className="w-3 h-3" /> Pairs
+                <Zap className="w-3 h-3" /> Status
               </span>
-              <span className="text-slate-300">
-                {status?.pairs?.length ?? '—'}
+              <span className={`font-medium ${isRunning ? 'text-emerald-400' : 'text-red-400'}`}>
+                {isRunning ? 'Active' : status?.emergencyStop ? 'Stopped' : 'Offline'}
               </span>
             </div>
-            {status?.pairs && status.pairs.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-1">
-                {status.pairs.map((pair) => (
-                  <span key={pair} className="text-[10px] px-1.5 py-0.5 bg-slate-800 rounded text-slate-400">
-                    {pair.replace('USDT', '')}
-                  </span>
-                ))}
-              </div>
-            )}
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500 flex items-center gap-1.5">
-                <Settings className="w-3 h-3" /> Last Updated
+                <BarChart3 className="w-3 h-3" /> Tracking
               </span>
               <span className="text-slate-300">
-                {status?.lastUpdated ? new Date(status.lastUpdated).toLocaleTimeString() : '—'}
+                {status?.pairs?.length ?? '—'} pairs
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-500 flex items-center gap-1.5">
+                <Clock className="w-3 h-3" /> Last Update
+              </span>
+              <span className="text-slate-300">
+                {status?.lastUpdated ? formatLastUpdate(status.lastUpdated) : '—'}
               </span>
             </div>
           </div>
