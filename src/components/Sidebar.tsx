@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, Settings, Clock, Zap, BarChart3, Bot } from 'lucide-react';
-import type { BotState } from '@/types';
+import type { BotState, Position } from '@/types';
 
 interface LogEntry {
   timestamp: string;
@@ -18,9 +18,10 @@ interface SidebarProps {
   logs?: LogEntry[];
   isRunning?: boolean;
   status?: BotState;
+  positions?: Position[];
 }
 
-export function Sidebar({ logs = [], isRunning = true, status }: SidebarProps) {
+export function Sidebar({ logs = [], isRunning = true, status, positions = [] }: SidebarProps) {
   const [expanded, setExpanded] = useState<string | null>('research');
   const [expandedLog, setExpandedLog] = useState<number | null>(null);
 
@@ -178,13 +179,24 @@ export function Sidebar({ logs = [], isRunning = true, status }: SidebarProps) {
                 {isRunning ? 'Active' : status?.emergencyStop ? 'Stopped' : 'Offline'}
               </span>
             </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500 flex items-center gap-1.5">
-                <BarChart3 className="w-3 h-3" /> Tracking
+            <div className="text-xs">
+              <span className="text-slate-500 flex items-center gap-1.5 mb-1.5">
+                <BarChart3 className="w-3 h-3" /> Holding
               </span>
-              <span className="text-slate-300">
-                {status?.pairs?.length ?? '—'} pairs
-              </span>
+              {positions.length > 0 ? (
+                <div className="space-y-1 ml-[18px]">
+                  {positions.map((pos) => (
+                    <div key={pos.symbol} className="flex items-center justify-between">
+                      <span className="text-slate-300">{pos.symbol.replace('USDT', '')}</span>
+                      <span className={pos.pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+                        {pos.pnl >= 0 ? '+' : ''}{pos.pnlPercent.toFixed(1)}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-slate-500 ml-[18px]">No positions</span>
+              )}
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500 flex items-center gap-1.5">

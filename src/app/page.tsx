@@ -50,7 +50,7 @@ export default function Dashboard() {
             </p>
             <div className="ml-auto">
               <MobileDrawer>
-                <Sidebar logs={trades} isRunning={isRunning} status={status} />
+                <Sidebar logs={trades} isRunning={isRunning} status={status} positions={positions} />
               </MobileDrawer>
             </div>
           </div>
@@ -93,7 +93,7 @@ export default function Dashboard() {
 
         {/* Sidebar - Desktop only, continuous bar */}
         <aside className="hidden lg:block w-72 border-l border-slate-800 bg-slate-900 flex-shrink-0 overflow-hidden">
-          <Sidebar logs={trades} isRunning={isRunning} status={status} />
+          <Sidebar logs={trades} isRunning={isRunning} status={status} positions={positions} />
         </aside>
       </div>
     </div>
