@@ -34,7 +34,7 @@ export function TradesTable({ isRunning = true }: TradesTableProps) {
     );
   }
 
-  const trades = data?.trades?.slice(0, 10) || [];
+  const trades = data?.trades?.slice(-10).reverse() || [];
 
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
