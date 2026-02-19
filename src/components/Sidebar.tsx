@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, XCircle, Settings, TrendingUp, Bot } from 'lucide-react';
+import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, Settings, TrendingUp, Bot } from 'lucide-react';
 
 interface LogEntry {
   timestamp: string;
@@ -20,9 +20,14 @@ interface SidebarProps {
 
 export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
   const [expanded, setExpanded] = useState<string | null>('research');
+  const [expandedLog, setExpandedLog] = useState<number | null>(null);
 
   const toggleSection = (section: string) => {
     setExpanded(expanded === section ? null : section);
+  };
+
+  const toggleLog = (idx: number) => {
+    setExpandedLog(expandedLog === idx ? null : idx);
   };
 
   const formatTime = (timestamp: string) => {
@@ -33,7 +38,7 @@ export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
   };
 
   const getActionIcon = (action: string, executed: boolean) => {
-    if (!executed) return <XCircle className="w-3.5 h-3.5 text-yellow-400" />;
+    if (!executed) return <Activity className="w-3.5 h-3.5 text-yellow-400" />;
     switch (action) {
       case 'BUY':
         return <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />;
@@ -41,6 +46,14 @@ export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
         return <AlertCircle className="w-3.5 h-3.5 text-red-400" />;
       default:
         return <Activity className="w-3.5 h-3.5 text-slate-400" />;
+    }
+  };
+
+  const getActionColor = (action: string) => {
+    switch (action) {
+      case 'BUY': return 'text-emerald-400';
+      case 'SELL': return 'text-red-400';
+      default: return 'text-slate-400';
     }
   };
 
@@ -72,22 +85,47 @@ export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
             ) : (
               <div className="divide-y divide-white/5">
                 {recentLogs.map((log, idx) => (
-                  <div key={idx} className="p-3 hover:bg-white/5">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-1.5">
-                        {getActionIcon(log.action, log.executed)}
-                        <span className="text-sm font-medium text-slate-200">
-                          {log.action} {log.pair.replace('USDT', '')}
-                        </span>
-                        {log.confidence && (
-                          <span className="text-xs text-slate-500">({log.confidence}%)</span>
+                  <div key={idx}>
+                    <button
+                      onClick={() => toggleLog(idx)}
+                      className="w-full p-3 hover:bg-white/5 text-left"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          {getActionIcon(log.action, log.executed)}
+                          <span className={`text-sm font-medium ${getActionColor(log.action)}`}>
+                            {log.action}
+                          </span>
+                          <span className="text-sm text-slate-300">
+                            {log.pair.replace('USDT', '')}
+                          </span>
+                          {log.confidence && (
+                            <span className="text-xs text-slate-500">({log.confidence}%)</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-slate-500">
+                            {formatTime(log.timestamp)}
+                          </span>
+                          <ChevronDown className={`w-3 h-3 text-slate-500 transition-transform ${expandedLog === idx ? 'rotate-180' : ''}`} />
+                        </div>
+                      </div>
+                      <p className={`text-xs text-slate-400 mt-1 ${expandedLog === idx ? '' : 'line-clamp-2'}`}>
+                        {log.reasoning}
+                      </p>
+                    </button>
+                    {expandedLog === idx && (
+                      <div className="px-3 pb-3 pt-0 bg-white/5">
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          {log.reasoning}
+                        </p>
+                        {log.price && (
+                          <p className="text-xs text-slate-500 mt-2">
+                            Price: ${log.price.toLocaleString()}
+                          </p>
                         )}
                       </div>
-                      <span className="text-xs text-slate-500">
-                        {formatTime(log.timestamp)}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-400 line-clamp-2">{log.reasoning}</p>
+                    )}
                   </div>
                 ))}
               </div>
