@@ -2,13 +2,15 @@
 
 import { useSignals } from '@/hooks/useBotData';
 import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import type { Recommendation } from '@/types';
 
 interface MarketCardProps {
   pair: string;
   isRunning?: boolean;
+  latestRecommendation?: Recommendation;
 }
 
-export function MarketCard({ pair, isRunning = true }: MarketCardProps) {
+export function MarketCard({ pair, isRunning = true, latestRecommendation }: MarketCardProps) {
   const { data: signals, isLoading, error } = useSignals(pair, isRunning);
 
   // Parse pair for display (BTCUSDT -> BTC/USDT)
@@ -52,21 +54,6 @@ export function MarketCard({ pair, isRunning = true }: MarketCardProps) {
   const change = parseFloat(signals.change24h);
   const isPositive = change >= 0;
 
-  // Determine signal based on RSI and price vs MAs
-  let signal: 'BUY' | 'SELL' | 'HOLD' = 'HOLD';
-  let signalConfidence = 50;
-
-  if (signals.rsi < 40 && price > signals.sma50) {
-    signal = 'BUY';
-    signalConfidence = Math.round(60 + (40 - signals.rsi));
-  } else if (signals.rsi > 60 && price < signals.sma50) {
-    signal = 'SELL';
-    signalConfidence = Math.round(60 + (signals.rsi - 60));
-  } else {
-    signal = 'HOLD';
-    signalConfidence = 50;
-  }
-
   const signalColors = {
     BUY: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
     SELL: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -90,11 +77,22 @@ export function MarketCard({ pair, isRunning = true }: MarketCardProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mb-4">
-        <span className={`px-3 py-1 rounded-full text-sm font-medium border ${signalColors[signal]}`}>
-          {signal} ({signalConfidence}%)
-        </span>
-      </div>
+      {latestRecommendation && (
+        <div className="flex flex-col gap-1.5 mb-4">
+          <div className="flex items-center gap-2">
+            <span className={`px-3 py-1 rounded-full text-sm font-medium border ${signalColors[latestRecommendation.action]}`}>
+              {latestRecommendation.action}
+              {latestRecommendation.amountUsd > 0 && ` $${latestRecommendation.amountUsd.toFixed(0)}`}
+            </span>
+            {latestRecommendation.executed && (
+              <span className="text-xs text-emerald-500">Executed</span>
+            )}
+          </div>
+          {latestRecommendation.reasoning && (
+            <p className="text-xs text-slate-500 line-clamp-2">{latestRecommendation.reasoning}</p>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div className="flex justify-between">

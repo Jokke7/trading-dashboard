@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, Settings, TrendingUp, Bot } from 'lucide-react';
+import type { BotState } from '@/types';
 
 interface LogEntry {
   timestamp: string;
@@ -16,9 +17,10 @@ interface LogEntry {
 interface SidebarProps {
   logs?: LogEntry[];
   isRunning?: boolean;
+  status?: BotState;
 }
 
-export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
+export function Sidebar({ logs = [], isRunning = true, status }: SidebarProps) {
   const [expanded, setExpanded] = useState<string | null>('research');
   const [expandedLog, setExpandedLog] = useState<number | null>(null);
 
@@ -152,23 +154,34 @@ export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
               <span className="text-slate-500 flex items-center gap-1.5">
                 <TrendingUp className="w-3 h-3" /> Mode
               </span>
-              <span className="text-slate-300 font-medium">Paper</span>
+              <span className="text-slate-300 font-medium capitalize">
+                {status?.mode ?? '—'}
+              </span>
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500 flex items-center gap-1.5">
                 <Activity className="w-3 h-3" /> Pairs
               </span>
-              <span className="text-slate-300">5</span>
+              <span className="text-slate-300">
+                {status?.pairs?.length ?? '—'}
+              </span>
             </div>
+            {status?.pairs && status.pairs.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {status.pairs.map((pair) => (
+                  <span key={pair} className="text-[10px] px-1.5 py-0.5 bg-slate-800 rounded text-slate-400">
+                    {pair.replace('USDT', '')}
+                  </span>
+                ))}
+              </div>
+            )}
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500 flex items-center gap-1.5">
-                <Settings className="w-3 h-3" /> Max Position
+                <Settings className="w-3 h-3" /> Last Updated
               </span>
-              <span className="text-slate-300">5</span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500">Max Trade</span>
-              <span className="text-slate-300">$20</span>
+              <span className="text-slate-300">
+                {status?.lastUpdated ? new Date(status.lastUpdated).toLocaleTimeString() : '—'}
+              </span>
             </div>
           </div>
         )}

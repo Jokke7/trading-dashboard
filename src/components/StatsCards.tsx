@@ -1,6 +1,6 @@
 'use client';
 
-import { usePositions } from '@/hooks/useBotData';
+import { usePositions, usePortfolio } from '@/hooks/useBotData';
 import { Wallet, TrendingUp, TrendingDown, DollarSign, Coins, Pause } from 'lucide-react';
 
 interface StatsCardsProps {
@@ -9,6 +9,7 @@ interface StatsCardsProps {
 
 export function StatsCards({ isRunning = true }: StatsCardsProps) {
   const { data: positionsData, isLoading: positionsLoading } = usePositions(isRunning);
+  const { data: portfolioData } = usePortfolio(isRunning);
 
   if (!isRunning) {
     return (
@@ -37,17 +38,20 @@ export function StatsCards({ isRunning = true }: StatsCardsProps) {
   }
 
   const positions = positionsData?.positions ?? [];
+  const balances = portfolioData?.balances ?? [];
   
   const totalValue = positions.reduce((sum, pos) => sum + pos.value, 0);
   const totalPnl = positions.reduce((sum, pos) => sum + pos.pnl, 0);
   
-  const initialBalance = 10000;
-  const currentBalance = initialBalance + totalPnl;
-  const pnlPercent = ((currentBalance - initialBalance) / initialBalance) * 100;
+  // Get available USDT from portfolio balances
+  const usdtBalance = balances.find(b => b.asset === 'USDT');
+  const availableUsdt = usdtBalance ? parseFloat(usdtBalance.free) : 0;
+  const portfolioTotal = totalValue + availableUsdt;
+  
+  const pnlPercent = portfolioTotal > 0 ? (totalPnl / portfolioTotal) * 100 : 0;
 
   const btcPosition = positions.find(p => p.symbol === 'BTCUSDT');
   const ethPosition = positions.find(p => p.symbol === 'ETHUSDT');
-  const usdtPosition = positions.find(p => p.symbol === 'USDTUSDT');
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -57,13 +61,13 @@ export function StatsCards({ isRunning = true }: StatsCardsProps) {
           <div>
             <p className="text-sm text-slate-500 mb-1">Paper Portfolio Value</p>
             <p className="text-2xl font-bold text-slate-100">
-              ${currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${portfolioTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
-            {positions.length > 0 && (
+            {(positions.length > 0 || availableUsdt > 0) && (
               <p className="text-xs text-slate-500 mt-1">
-                {btcPosition && `${(btcPosition.value / totalValue * 100).toFixed(1)}% BTC `}
-                {ethPosition && `${(ethPosition.value / totalValue * 100).toFixed(1)}% ETH `}
-                {usdtPosition && `${(usdtPosition.value / totalValue * 100).toFixed(1)}% USDT`}
+                {btcPosition && `${(btcPosition.value / portfolioTotal * 100).toFixed(1)}% BTC `}
+                {ethPosition && `${(ethPosition.value / portfolioTotal * 100).toFixed(1)}% ETH `}
+                {availableUsdt > 0 && `${(availableUsdt / portfolioTotal * 100).toFixed(1)}% USDT`}
               </p>
             )}
           </div>
@@ -79,10 +83,10 @@ export function StatsCards({ isRunning = true }: StatsCardsProps) {
           <div>
             <p className="text-sm text-slate-500 mb-1">Paper Money Available</p>
             <p className="text-2xl font-bold text-emerald-400">
-              ${initialBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${availableUsdt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
             <p className="text-xs text-slate-500 mt-1">
-              Starting balance
+              Available USDT
             </p>
           </div>
           <div className="p-3 bg-emerald-500/20 rounded-lg">

@@ -8,18 +8,22 @@ Currently running at [trading.godot.no](https://trading.godot.no)
 
 ## Features
 
-- 📊 Real-time portfolio value and P&L tracking
-- 🟢 Bot status indicator with emergency controls
-- 💰 Market overview for BTC/USDT and ETH/USDT
-- 📈 Portfolio chart (7-day history)
-- 📋 Recent trades table
-- 🔄 Auto-refresh every 30 seconds
+- Real-time portfolio value and P&L tracking from live positions
+- Bot status indicator with emergency stop/start controls
+- Market cards with technical indicators (RSI, MACD, SMAs) per active position
+- Bot recommendations displayed per market pair
+- Trade activity chart (equity curve from executed trades)
+- Recent trades table with execution status
+- Research logs sidebar with expandable LLM reasoning
+- Dynamic system info (mode, pairs, last updated) from bot API
+- Mobile-friendly with slide-in drawer for sidebar
+- Auto-refresh every 30 seconds
 
 ## Tech Stack
 
 - **Runtime**: Bun
-- **Framework**: Next.js 15 + React 19
-- **Styling**: Tailwind CSS
+- **Framework**: Next.js 16 + React 19
+- **Styling**: Tailwind CSS v4
 - **Charts**: Recharts
 - **State**: TanStack Query (React Query)
 - **Icons**: Lucide React
@@ -121,14 +125,16 @@ This dashboard is designed to deploy to Cloudflare Pages:
 
 The dashboard polls these endpoints from the bot API:
 
-- `GET /health` - Bot status
-- `GET /status` - Emergency stop state
-- `GET /portfolio` - Account balances
-- `GET /trades` - Trade history
-- `GET /signals/:pair` - Technical indicators
+- `GET /health` - Bot health check (no auth)
+- `GET /status` - Bot state (running, mode, pairs, emergency stop)
+- `GET /portfolio` - Account balances (USDT available)
+- `GET /positions` - Active positions with P&L
+- `GET /recommendations` - Bot trading recommendations
+- `GET /trades` - Trade history with LLM reasoning
+- `GET /signals/:pair` - Technical indicators (RSI, MACD, SMAs)
 - `POST /emergency-stop` - Stop/resume trading
 
-All endpoints require `X-API-Key` header.
+All endpoints except `/health` require `X-API-Key` header.
 
 ## License
 

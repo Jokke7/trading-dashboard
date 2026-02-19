@@ -6,12 +6,13 @@
 
 ## Project Overview
 
-- **Type**: Next.js 15 monitoring dashboard for trading bot
+- **Type**: Next.js 16 monitoring dashboard for trading bot
 - **Runtime**: Bun
-- **Framework**: Next.js 15 + React 19 + Tailwind CSS
+- **Framework**: Next.js 16 + React 19 + Tailwind CSS v4
 - **Charts**: Recharts
 - **State Management**: TanStack Query (React Query)
 - **API**: Polls bot API at `/health`, `/status`, `/portfolio`, `/positions`, `/recommendations`, `/trades`, `/signals/:pair`
+- **Deployment**: Static export to Cloudflare Pages
 
 ---
 
