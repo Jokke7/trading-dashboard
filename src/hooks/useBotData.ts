@@ -8,6 +8,7 @@ import {
   getTrades,
   getSignals,
   getPositions,
+  getRecommendations,
   setEmergencyStop,
 } from '@/lib/api';
 
@@ -58,6 +59,16 @@ export function usePositions(enabled = true) {
   return useQuery({
     queryKey: ['positions'],
     queryFn: getPositions,
+    refetchInterval: enabled ? REFRESH_INTERVAL : PAUSED_INTERVAL,
+    retry: 3,
+    enabled,
+  });
+}
+
+export function useRecommendations(enabled = true) {
+  return useQuery({
+    queryKey: ['recommendations'],
+    queryFn: getRecommendations,
     refetchInterval: enabled ? REFRESH_INTERVAL : PAUSED_INTERVAL,
     retry: 3,
     enabled,

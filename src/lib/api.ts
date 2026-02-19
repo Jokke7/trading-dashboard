@@ -6,6 +6,7 @@ import {
   Signals,
   EmergencyStopResponse,
   PositionsResponse,
+  RecommendationsResponse,
 } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_BOT_API_URL || 'http://localhost:3847';
@@ -53,6 +54,10 @@ export async function getTrades(): Promise<TradesResponse> {
 
 export async function getPositions(): Promise<PositionsResponse> {
   return fetchApi<PositionsResponse>('/positions');
+}
+
+export async function getRecommendations(): Promise<RecommendationsResponse> {
+  return fetchApi<RecommendationsResponse>('/recommendations');
 }
 
 export async function getSignals(pair: string): Promise<Signals> {

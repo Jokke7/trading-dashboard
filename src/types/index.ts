@@ -27,6 +27,21 @@ export interface PositionsResponse {
   positions: Position[];
 }
 
+export interface Recommendation {
+  timestamp: string;
+  symbol: string;
+  action: 'BUY' | 'SELL' | 'HOLD';
+  amountUsd: number;
+  reasoning: string;
+  executed: boolean;
+  reason?: string;
+}
+
+export interface RecommendationsResponse {
+  recommendations: Recommendation[];
+  date: string;
+}
+
 export interface Balance {
   asset: string;
   free: string;

@@ -5,15 +5,18 @@ import { StatusBar } from '@/components/StatusBar';
 import { StatsCards } from '@/components/StatsCards';
 import { MarketCard } from '@/components/MarketCard';
 import { TradesTable } from '@/components/TradesTable';
+import { Sidebar } from '@/components/Sidebar';
 import { Activity, Wallet } from 'lucide-react';
-import { useStatus, usePositions } from '@/hooks/useBotData';
+import { useStatus, usePositions, useRecommendations } from '@/hooks/useBotData';
 
 export default function Dashboard() {
   const { data: status } = useStatus();
   const { data: positionsData } = usePositions(status?.running ?? false);
+  const { data: recommendationsData } = useRecommendations(status?.running ?? false);
   const isRunning = status?.running && !status?.emergencyStop;
 
   const positions = positionsData?.positions ?? [];
+  const recommendations = recommendationsData?.recommendations ?? [];
 
   return (
     <div className="min-h-screen bg-slate-950">
@@ -37,28 +40,38 @@ export default function Dashboard() {
         <StatusBar />
       </header>
 
-      {/* Main Content */}
-      <main className="p-4 md:p-6 space-y-4 md:space-y-6">
-        {/* Stats Cards - Pass isRunning to control auto-refresh */}
-        <StatsCards isRunning={isRunning} />
+      {/* Main Content with Sidebar */}
+      <main className="p-4 md:p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Main Content */}
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
+            {/* Stats Cards */}
+            <StatsCards isRunning={isRunning} />
 
-        {/* Positions / Market Cards */}
-        {positions.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {positions.map((position) => (
-              <MarketCard key={position.symbol} pair={position.symbol} isRunning={isRunning} />
-            ))}
-          </div>
-        ) : (
-          <div className="bg-slate-900 rounded-xl p-8 border border-slate-800 text-center">
-            <Wallet className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-300 mb-2">No Active Positions</h3>
-            <p className="text-slate-500">The bot hasn&apos;t opened any positions yet.</p>
-          </div>
-        )}
+            {/* Positions / Market Cards */}
+            {positions.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {positions.map((position) => (
+                  <MarketCard key={position.symbol} pair={position.symbol} isRunning={isRunning} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-slate-900 rounded-xl p-8 border border-slate-800 text-center">
+                <Wallet className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-slate-300 mb-2">No Active Positions</h3>
+                <p className="text-slate-500">The bot hasn&apos;t opened any positions yet.</p>
+              </div>
+            )}
 
-        {/* Trades Table - Pass isRunning to control auto-refresh */}
-        <TradesTable isRunning={isRunning} />
+            {/* Trades Table */}
+            <TradesTable isRunning={isRunning} />
+          </div>
+
+          {/* Right Column - Sidebar */}
+          <div className="space-y-4">
+            <Sidebar logs={recommendations} isRunning={isRunning} />
+          </div>
+        </div>
       </main>
 
       {/* Footer */}
