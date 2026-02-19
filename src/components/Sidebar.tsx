@@ -114,16 +114,11 @@ export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
                         {log.reasoning}
                       </p>
                     </button>
-                    {expandedLog === idx && (
+                    {expandedLog === idx && log.price && (
                       <div className="px-3 pb-3 pt-0 bg-white/5">
-                        <p className="text-xs text-slate-400 leading-relaxed">
-                          {log.reasoning}
+                        <p className="text-xs text-slate-500">
+                          Price: ${log.price.toLocaleString()}
                         </p>
-                        {log.price && (
-                          <p className="text-xs text-slate-500 mt-2">
-                            Price: ${log.price.toLocaleString()}
-                          </p>
-                        )}
                       </div>
                     )}
                   </div>
