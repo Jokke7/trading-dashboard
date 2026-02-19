@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, XCircle, Settings, Zap, TrendingUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, XCircle, Settings, Zap, TrendingUp, Bot } from 'lucide-react';
 
 interface LogEntry {
   timestamp: string;
@@ -19,7 +19,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
-  const [expanded, setExpanded] = useState<string | null>('recommendations');
+  const [expanded, setExpanded] = useState<string | null>('research');
 
   const toggleSection = (section: string) => {
     setExpanded(expanded === section ? null : section);
@@ -44,35 +44,35 @@ export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
     }
   };
 
-  const recentLogs = logs.slice(-8).reverse();
+  const recentLogs = logs.slice(-10).reverse();
 
   return (
     <div className="h-full flex flex-col">
-      {/* Recommendations Section */}
+      {/* Research Logs Section */}
       <div className="flex-1 overflow-hidden flex flex-col">
         <button
-          onClick={() => toggleSection('recommendations')}
-          className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-800/50 transition-colors border-b border-slate-800"
+          onClick={() => toggleSection('research')}
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/10"
         >
           <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-blue-400" />
-            <span className="text-sm font-medium text-slate-200">Dexter</span>
+            <Bot className="w-4 h-4 text-slate-400" />
+            <span className="text-sm font-medium text-slate-300">Research logs</span>
           </div>
-          {expanded === 'recommendations' ? (
+          {expanded === 'research' ? (
             <ChevronUp className="w-4 h-4 text-slate-500" />
           ) : (
             <ChevronDown className="w-4 h-4 text-slate-500" />
           )}
         </button>
 
-        {expanded === 'recommendations' && (
+        {expanded === 'research' && (
           <div className="flex-1 overflow-y-auto">
             {recentLogs.length === 0 ? (
-              <p className="p-4 text-slate-500 text-xs">No recommendations yet</p>
+              <p className="p-4 text-slate-500 text-xs">No research yet</p>
             ) : (
-              <div className="divide-y divide-slate-800">
+              <div className="divide-y divide-white/5">
                 {recentLogs.map((log, idx) => (
-                  <div key={idx} className="p-3 hover:bg-slate-800/30">
+                  <div key={idx} className="p-3 hover:bg-white/5">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-1.5">
                         {getActionIcon(log.action, log.executed)}
@@ -98,15 +98,15 @@ export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
         )}
       </div>
 
-      {/* System Status - Bottom of Sidebar */}
-      <div className="border-t border-slate-800">
+      {/* System Status - Bottom */}
+      <div className="border-t border-white/10">
         <button
           onClick={() => toggleSection('status')}
-          className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-800/50 transition-colors"
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${isRunning ? 'bg-emerald-400' : 'bg-red-400'}`} />
-            <span className="text-sm font-medium text-slate-200">System</span>
+            <span className="text-sm font-medium text-slate-300">System</span>
           </div>
           {expanded === 'status' ? (
             <ChevronUp className="w-4 h-4 text-slate-500" />

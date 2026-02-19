@@ -63,8 +63,8 @@ export default function Dashboard() {
           <TradesTable isRunning={isRunning} />
         </main>
 
-        {/* Sidebar - Full Height */}
-        <aside className="w-80 border-l border-slate-800 bg-slate-900/50 flex-shrink-0 overflow-hidden">
+        {/* Sidebar - Desktop only, continuous bar */}
+        <aside className="hidden lg:block w-72 border-l border-slate-800 bg-slate-900 flex-shrink-0 overflow-hidden">
           <Sidebar logs={recommendations} isRunning={isRunning} />
         </aside>
       </div>
