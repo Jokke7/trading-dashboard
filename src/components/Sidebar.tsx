@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle2, XCircle, Settings, Zap, TrendingUp } from 'lucide-react';
 
 interface LogEntry {
   timestamp: string;
@@ -33,53 +33,50 @@ export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
   };
 
   const getActionIcon = (action: string, executed: boolean) => {
-    if (!executed) return <XCircle className="w-4 h-4 text-yellow-400" />;
+    if (!executed) return <XCircle className="w-3.5 h-3.5 text-yellow-400" />;
     switch (action) {
       case 'BUY':
-        return <CheckCircle2 className="w-4 h-4 text-emerald-400" />;
+        return <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />;
       case 'SELL':
-        return <AlertCircle className="w-4 h-4 text-red-400" />;
+        return <AlertCircle className="w-3.5 h-3.5 text-red-400" />;
       default:
-        return <Activity className="w-4 h-4 text-slate-400" />;
+        return <Activity className="w-3.5 h-3.5 text-slate-400" />;
     }
   };
 
-  const recentLogs = logs.slice(-10).reverse();
+  const recentLogs = logs.slice(-8).reverse();
 
   return (
-    <div className="space-y-3">
+    <div className="h-full flex flex-col">
       {/* Recommendations Section */}
-      <div className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
+      <div className="flex-1 overflow-hidden flex flex-col">
         <button
           onClick={() => toggleSection('recommendations')}
-          className="w-full flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors"
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-800/50 transition-colors border-b border-slate-800"
         >
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-blue-400" />
-            <span className="font-semibold text-slate-200">Dexter Recommendations</span>
+            <Zap className="w-4 h-4 text-blue-400" />
+            <span className="text-sm font-medium text-slate-200">Dexter</span>
           </div>
           {expanded === 'recommendations' ? (
-            <ChevronUp className="w-5 h-5 text-slate-400" />
+            <ChevronUp className="w-4 h-4 text-slate-500" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-slate-400" />
+            <ChevronDown className="w-4 h-4 text-slate-500" />
           )}
         </button>
 
         {expanded === 'recommendations' && (
-          <div className="border-t border-slate-800">
+          <div className="flex-1 overflow-y-auto">
             {recentLogs.length === 0 ? (
-              <p className="p-4 text-slate-500 text-sm">No recommendations yet</p>
+              <p className="p-4 text-slate-500 text-xs">No recommendations yet</p>
             ) : (
-              <div className="max-h-80 overflow-y-auto">
+              <div className="divide-y divide-slate-800">
                 {recentLogs.map((log, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 border-b border-slate-800/50 last:border-0 hover:bg-slate-800/30"
-                  >
+                  <div key={idx} className="p-3 hover:bg-slate-800/30">
                     <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         {getActionIcon(log.action, log.executed)}
-                        <span className="font-medium text-slate-200">
+                        <span className="text-sm font-medium text-slate-200">
                           {log.action} {log.symbol.replace('USDT', '')}
                         </span>
                       </div>
@@ -87,15 +84,11 @@ export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
                         {formatTime(log.timestamp)}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 mb-1">{log.reasoning}</p>
+                    <p className="text-xs text-slate-400 line-clamp-2 mb-1">{log.reasoning}</p>
                     {log.executed ? (
-                      <span className="text-xs text-emerald-400">
-                        ${log.amountUsd.toFixed(2)} executed
-                      </span>
+                      <span className="text-xs text-emerald-400">${log.amountUsd.toFixed(2)}</span>
                     ) : (
-                      <span className="text-xs text-yellow-400">
-                        {log.reason || 'Not executed'}
-                      </span>
+                      <span className="text-xs text-yellow-400">{log.reason || 'Skipped'}</span>
                     )}
                   </div>
                 ))}
@@ -105,40 +98,46 @@ export function Sidebar({ logs = [], isRunning = true }: SidebarProps) {
         )}
       </div>
 
-      {/* System Status Section */}
-      <div className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
+      {/* System Status - Bottom of Sidebar */}
+      <div className="border-t border-slate-800">
         <button
           onClick={() => toggleSection('status')}
-          className="w-full flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors"
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-800/50 transition-colors"
         >
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${isRunning ? 'bg-emerald-400' : 'bg-red-400'}`} />
-            <span className="font-semibold text-slate-200">System Status</span>
+            <span className="text-sm font-medium text-slate-200">System</span>
           </div>
           {expanded === 'status' ? (
-            <ChevronUp className="w-5 h-5 text-slate-400" />
+            <ChevronUp className="w-4 h-4 text-slate-500" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-slate-400" />
+            <ChevronDown className="w-4 h-4 text-slate-500" />
           )}
         </button>
 
         {expanded === 'status' && (
-          <div className="border-t border-slate-800 p-4 space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-slate-400">Bot Mode</span>
-              <span className="text-slate-200">Paper</span>
+          <div className="px-4 pb-4 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-500 flex items-center gap-1.5">
+                <TrendingUp className="w-3 h-3" /> Mode
+              </span>
+              <span className="text-slate-300 font-medium">Paper</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Active Pairs</span>
-              <span className="text-slate-200">5</span>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-500 flex items-center gap-1.5">
+                <Activity className="w-3 h-3" /> Pairs
+              </span>
+              <span className="text-slate-300">5</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Max Positions</span>
-              <span className="text-slate-200">5</span>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-500 flex items-center gap-1.5">
+                <Settings className="w-3 h-3" /> Max Position
+              </span>
+              <span className="text-slate-300">5</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Max Trade</span>
-              <span className="text-slate-200">$20</span>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-500">Max Trade</span>
+              <span className="text-slate-300">$20</span>
             </div>
           </div>
         )}
